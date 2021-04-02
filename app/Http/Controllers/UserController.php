@@ -28,7 +28,7 @@ class UserController extends Controller
      * @param User $id
      * @return void
      */
-    public function show(User $id)
+    public function show($id)
     {
         $user = User::find($id);
  
@@ -43,5 +43,29 @@ class UserController extends Controller
             'success' => true,
             'data' => $user->toArray()
         ], 400);
+    }
+
+    public function destroy($id)
+    {
+        $user = User::find($id);
+ 
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 400);
+        }
+ 
+        if ($user->delete()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'El usuario con correo '.$user->email.' ha sido eliminado correctamente',
+            ]);
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'El usuario no puede ser eliminado'
+            ], 500);
+        }
     }
 }
