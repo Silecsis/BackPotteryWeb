@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * CRUD de usuarios desde el administrador.
@@ -20,7 +22,7 @@ class UserController extends Controller
     {
         $users=User::all();
 
-        return response()->json($users);;
+        return response()->json($users);
     }
 
     /**
@@ -46,6 +48,10 @@ class UserController extends Controller
         ], 200);
     }
 
+    /**
+     * Edita el usuario
+     *
+     */
     public function update(Request $request, $id)
     {
         $user = User::find($id);
@@ -67,6 +73,37 @@ class UserController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'El usuario no puede ser actualizado'
+            ], 500);
+    }
+
+    public function create(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required',
+            'password' => 'required',
+            'type' => 'required',
+            'nick' => 'required'
+         ]);
+ 
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->type = $request->type;
+        $user->nick = $request->nick;
+        $user->email_verified_at = Carbon::now()->format('Y-m-d H:i:s');
+        $user->remember_token = 'remember'.$user->nick;
+ 
+        if ($user->save())
+            return response()->json([
+                'success' => true,
+                'data' => $user->toArray()
+            ]);
+        else
+            return response()->json([
+                'success' => false,
+                'message' => 'Se ha producido un error a la hora de crear el usuario'
             ], 500);
     }
 
