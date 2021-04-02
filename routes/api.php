@@ -23,4 +23,5 @@ use App\Http\Controllers\UserController;
 //-------------------MODELO USUARIOS------------------------
 Route::get('users', [UserController::class,'all']);
 Route::get('users/{id}', [UserController::class,'show']);
-Route::delete('users/{id}', [UserController::class,'destroy']);
+Route::delete('/users/{id}', [UserController::class,'destroy']);
+Route::put('/users/{id}', [UserController::class,'update']);
