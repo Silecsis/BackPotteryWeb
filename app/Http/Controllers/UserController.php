@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 /**
  * CRUD de usuarios desde el administrador.
@@ -20,9 +21,15 @@ class UserController extends Controller
      */
     public function all()
     {
-        $users=User::all();
+        if(Auth::user()->type=='admin'){
+            $users=User::all();
+            return response()->json($users);
+        }else{
+            $error='No admin';
 
-        return response()->json($users);
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+        
     }
 
     /**
