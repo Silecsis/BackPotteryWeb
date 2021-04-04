@@ -39,6 +39,8 @@ Route::get('users/{id}', [UserController::class,'show'])->middleware('auth:api')
 Route::delete('/users/{id}', [UserController::class,'destroy'])->middleware('auth:api');
 Route::put('/users/{id}', [UserController::class,'update'])->middleware('auth:api');
 Route::post('/users', [UserController::class,'create'])->middleware('auth:api');
+Route::post('/users/{id}', [UserController::class,'updateProfile'])->middleware('auth:api');
+Route::get('users/profile/{id}', [UserController::class,'showProfile'])->middleware('auth:api');
 
 //-------------------MODELO MATERIALES------------------------
 Route::get('materials', [MaterialController::class,'all']);
