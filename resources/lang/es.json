@@ -1,0 +1,30 @@
+{
+   "Click to register": "Click para registrarse",
+   "Forgot your password?":"¿Olvidó su contraseña?",
+   "Remember me":"Recuérdame",
+   "Showing":"Mostrando",
+   "to":"a",
+   "of":"de",
+   "records":"registros",
+   "results":"resultados",
+   "Previous":"Anterior",
+   "Next":"Siguiente",
+   "Login":"Entrar",
+   "Logout":"Cerrar sesión",
+   "Add a new comment":"Añadir un nuevo comentario",
+   "Image panel":"Panel de imágenes",
+   "Image detail":"Detalle de imagen",
+   "Type Your Comment":"Teclea tu comentario",
+   "Post Comment":"Sube tu Comentario",
+   "Whoops! Something went wrong.":"Whoops! Algo fue mal.",
+   "You have published your comment correctly!":"¡Has publicado tu comentario correctamente!",
+   "You have successfully deleted the comment!":"¡Has eliminado el comentario correctamente!",
+   "You do not have permission to delete the comment":"No tienes permiso para eliminar el comentario",
+   "Favorite Images":"Imágenes favoritas",
+   "Home":"Inicio",
+   "Upload Image":"Subir Imagen",
+   "Configuration":"Configuración",
+   "User Configuration":"Imágenes del usuario"
+
+
+}
