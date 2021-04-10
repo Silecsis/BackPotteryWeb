@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Material;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -15,16 +13,24 @@ use Illuminate\Support\Facades\Auth;
  * Los usuarios solo podrán listar los materiales.
  * Modificación de perfil de cada usuario.
  */
-class UserController extends Controller
+class MaterialController extends Controller
 {
     /**
      * Lista todos los materiales.
+     * Filtra los materiales.
      * Puede acceder los usuarios logados.
      *
      */
-    public function all()
+    public function all(Request $request)
     {
-        $materials=Material::all();
+        //Tipos de filtrado:
+        $nombre= $request->get('buscaNombre');
+        $tipo= $request->get('buscaTipo');
+        $temperatura= $request->get('buscaTemperatura');
+        $toxico= $request->get('buscaToxico');
+        $fecha= $request->get('buscaFechaCreac');
+
+        $materials=Material::nombre($nombre)->tipo($tipo)->temperatura($temperatura)->fecha($fecha)->toxico($toxico)->get();
         return response()->json($materials);
     }
 
@@ -76,8 +82,8 @@ class UserController extends Controller
 
             //Si existe, primero validamos.   
             $request->validate([
-                'name' => 'required|string|max:255',
-                'type_material' => 'required|string|max:255',
+                'name' => 'required|string|min:3|max:20|unique:materials,name,' . $material->id,
+                'type_material' => 'required|string|min:3|max:20',
                 'temperature' => 'required|int',
                 'toxic' => 'required|boolean'
              ]); 
@@ -111,8 +117,8 @@ class UserController extends Controller
     {
         if(Auth::user()->type=='admin'){
             $request->validate([
-                'name' => 'required|string|max:255',
-                'type_material' => 'required|string|max:255',
+                'name' => 'required|string|min:3|max:20|unique:materials,name',
+                'type_material' => 'required|string|min:3|max:20',
                 'temperature' => 'required|int',
                 'toxic' => 'required|boolean'
              ]); 

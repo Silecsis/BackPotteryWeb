@@ -16,13 +16,21 @@ class UserController extends Controller
 {
     /**
      * Lista todos los usuarios.
+     * Filtra los usuarios.
      * Solo puede acceder el tipo administrador.
      *
      */
-    public function all()
+    public function all(Request $request)
     {
         if(Auth::user()->type=='admin'){
-            $users=User::all();
+            //Tipos de filtrado:
+            $nombre= $request->get('buscaNombre');
+            $email= $request->get('buscaEmail');
+            $nick= $request->get('buscaNick');
+            $fecha= $request->get('buscaFechaLogin');
+            $tipo= $request->get('buscaTipo');
+
+            $users=User::nombre($nombre)->email($email)->nick($nick)->fecha($fecha)->tipo($tipo)->get();
             return response()->json($users);
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
@@ -110,7 +118,7 @@ class UserController extends Controller
             $request->validate([
                 'name' => 'required|string|max:255|min:6',
                 'email' => 'required|string|email|max:255|min:6|unique:users,email,' . $user->id,
-                'type' => 'required|string|max:10|in:admin,user' . $user->id,
+                'type' => 'required|string|max:10|in:admin,user',
                 'nick' => 'required|string|max:255|min:4'
                 //'img' => 'required|min:4',
              ]); 
@@ -201,7 +209,7 @@ class UserController extends Controller
             $user = new User();
             $user->name = $request->name;
             $user->email = $request->email;
-            $user->password = $request->password;
+            $user->password = Hash::make($request->password);
             $user->type = $request->type;
             $user->nick = $request->nick;
             $user->email_verified_at = Carbon::now()->format('Y-m-d H:i:s');

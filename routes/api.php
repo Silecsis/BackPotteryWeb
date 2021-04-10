@@ -43,7 +43,7 @@ Route::post('/users/{id}', [UserController::class,'updateProfile'])->middleware(
 Route::get('users/profile/{id}', [UserController::class,'showProfile'])->middleware('auth:api');
 
 //-------------------MODELO MATERIALES------------------------
-Route::get('materials', [MaterialController::class,'all']);
+Route::get('materials', [MaterialController::class,'all'])->middleware('auth:api');
 Route::get('materials/{id}', [MaterialController::class,'show'])->middleware('auth:api');
 Route::delete('/materials/{id}', [MaterialController::class,'destroy'])->middleware('auth:api');
 Route::put('/materials/{id}', [MaterialController::class,'update'])->middleware('auth:api');
