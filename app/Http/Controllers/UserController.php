@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
+
+
+use Illuminate\Http\Response;
 
 /**
  * CRUD de usuarios desde el administrador.
@@ -166,12 +171,32 @@ class UserController extends Controller
                 'password' => 'required|string|confirmed|min:8',
                 'password_confirmation'=>'required_with:password|same:password|min:8',
                 'nick' => 'required|string|max:255|min:4'
-            ]);  
-
+            ]); 
             
             $user->fill($request->all());
+
             $user->password = Hash::make($request->password);
             $user->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+            //Subir la imagen
+            $image= $request->file('image'); 
+            // Si recibimos un objeto imagen tendremos que utilizar el disco para almacenarla
+            // Para ello utilizaremos un objeto storage de Laravel
+            if($image){
+                // Generamos un nombre único para la imagen basado en time() y el nombre original de la imagen
+                $image_name =  time() . $image->getClientOriginalName();
+                $image_delete= $user->img;//Será para borrar la imagen y no saturar la carpeta
+                
+                // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                // donde se almacenó y guardamos la imagen recibida con el nombre generado
+                Storage::disk('users')->put($image_name, File::get($image));
+
+                //Si no es la imagen por defecto, eliminamos la que tenia antes
+                if($image_delete != 'default-img.png'){
+                    Storage::disk('users')->delete($image_delete);
+                }
+                $user->img = $image_name; 
+            }
         
             $updated= $user->save();
         
@@ -263,5 +288,28 @@ class UserController extends Controller
                 'message' => 'El usuario no puede ser eliminado'
             ], 500);
         }
+    }
+
+
+    /**
+     * Devuelve la imagen avatar del usuario.
+     * Si el user no tiene imagen o no existe, se envia un 404.
+     *
+     * @param [type] $filename
+     * @return void
+     */
+    public function getImage($id){  
+        $user=User::find($id);
+        
+        if($user){
+
+            if($user->img != null && Storage::disk('users')->exists($user->img)){
+                $filename=$user->img;  
+                $file = Storage::disk('users')->get($filename);
+                return new Response($file, 200);
+            }             
+        }
+
+        return new Response(null,404);
     }
 }

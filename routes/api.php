@@ -39,8 +39,12 @@ Route::get('users/{id}', [UserController::class,'show'])->middleware('auth:api')
 Route::delete('/users/{id}', [UserController::class,'destroy'])->middleware('auth:api');
 Route::put('/users/{id}', [UserController::class,'update'])->middleware('auth:api');
 Route::post('/users', [UserController::class,'create'])->middleware('auth:api');
-Route::put('/users/profile/{id}', [UserController::class,'updateProfile'])->middleware('auth:api');
 Route::get('users/profile/{id}', [UserController::class,'showProfile'])->middleware('auth:api');
+Route::get('avatar/{id}', [UserController::class,'getImage']);
+
+//Por el tema de la img, aqui se pone mediante post para que reciba el form con el header.
+//Para que funcione con put habría que instalar otra libreria de la que no tengo conocimiento.
+Route::post('/users/profile/{id}', [UserController::class,'updateProfile'])->middleware('auth:api');
 
 //-------------------MODELO MATERIALES------------------------
 Route::get('materials', [MaterialController::class,'all'])->middleware('auth:api');
