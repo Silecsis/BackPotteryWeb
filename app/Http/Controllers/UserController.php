@@ -167,8 +167,13 @@ class UserController extends Controller
                 'password_confirmation'=>'required_with:password|same:password|min:8',
                 'nick' => 'required|string|max:255|min:4'
             ]);  
+
+            
+            $user->fill($request->all());
+            $user->password = Hash::make($request->password);
+            $user->updated_at = Carbon::now()->format('Y-m-d H:i:s');
         
-            $updated = $user->fill($request->all())->save();
+            $updated= $user->save();
         
             if ($updated)
                 return response()->json([
