@@ -58,5 +58,7 @@ Route::put('/pieces/{id}', [PieceController::class,'update'])->middleware('auth:
 //-------------------MODELO VENTAS------------------------
 Route::get('sales', [SaleController::class,'all']);
 Route::get('sales/{id}', [SaleController::class,'show'])->middleware('auth:api');
-Route::delete('/sales/{id}', [SaleController::class,'destroy'])->middleware('auth:api');
 Route::put('/sales/{id}', [SaleController::class,'update'])->middleware('auth:api');
+Route::get('mysales/{idUser}', [SaleController::class,'allMySales'])->middleware('auth:api');
+Route::get('mysales/{idUser}/{id}', [SaleController::class,'showMySale'])->middleware('auth:api');
+Route::put('/mysales/{idUser}/{id}', [SaleController::class,'updateMySale'])->middleware('auth:api');
