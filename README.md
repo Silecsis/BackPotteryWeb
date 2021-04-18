@@ -16,7 +16,7 @@ Proyecto final del curso. Backend
 <lu>
     <li>composer install</li>
     <li>cp .env.example .env</li>
-    <li>php artisan key:generate</li
+    <li>php artisan key:generate</li>
     <li>php artisan cache:clear</li>
     <li>php artisan config:cache</li>
     <li>php artisan migrate</li>
