@@ -24,4 +24,6 @@ Proyecto final del curso. Backend
     <li>php artisan passport:install</li>
 </lu> 
 
+<b>Recuerda lanzar el proyecto con "php artisan serve"</b>
+
 
