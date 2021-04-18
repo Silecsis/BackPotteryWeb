@@ -11,9 +11,9 @@
 ## Para clonar el repositorio
 
 Realizar:
-    - composer install
-	- cp .env.example .env
-	- php artisan key:generate
+composer install
+cp .env.example .env
+php artisan key:generate
 	- php artisan cache:clear
 	- php artisan config:cache
 	- php artisan migrate
