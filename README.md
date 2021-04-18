@@ -7,17 +7,21 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Información del repositorio
+Proyecto final del curso. Backend
 
 ## Para clonar el repositorio
 
-Realizar:
-composer install
-cp .env.example .env
-php artisan key:generate
-	- php artisan cache:clear
-	- php artisan config:cache
-	- php artisan migrate
-	- php artisan db:seed 
-	- **php artisan passport:install**
+<p><b>Realizar:</b></p>
+<lu>
+    <li>composer install</li>
+    <li>cp .env.example .env</li>
+    <li>php artisan key:generate</li
+    <li>php artisan cache:clear</li>
+    <li>php artisan config:cache</li>
+    <li>php artisan migrate</li>
+    <li>php artisan db:seed</li>
+    <li>php artisan passport:install</li>
+</lu> 
 
 
