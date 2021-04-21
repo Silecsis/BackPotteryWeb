@@ -22,12 +22,21 @@ use Illuminate\Support\Facades\File;
 class PieceController extends Controller
 {
 
-    public function all()
+    public function all(Request $request)
     {
-        $users=User::all();
-        $pieces=Piece::all();
+        //Solo recoge los usuarios que tienen, al menos, una pieza
+        $users=User::whereHas('pieces')->get();
 
-        foreach($users as $user){
+        //Tipos de filtrado:
+        $nombre= $request->get('buscaNombre');
+        $idUser= $request->get('buscaUser');
+        $vendido= $request->get('buscaVendido');
+        $fecha= $request->get('buscaFechaLogin');
+
+         //La pieza con los filtros:
+         $pieces = Piece::nombre($nombre)->userId($idUser)->vendido($vendido)->fecha($fecha)->get();
+
+         foreach($users as $user){
             foreach($pieces as $piece){
                 if($user->id == $piece->user_id){
                     $piece->emailUser=$user->email;
@@ -35,8 +44,13 @@ class PieceController extends Controller
             }
         }
 
+        $response=[
+            "users"=>$users,
+            "pieces"=> $pieces,
+        ];
 
-        return response()->json($pieces);
+
+        return response()->json($response);
     }
     
     /**
@@ -45,19 +59,23 @@ class PieceController extends Controller
      */
     public function show($id)
     {
-        $piece = Piece::find($id);
- 
-        if (!$piece) {
+        if(Auth::user()->type=='admin'){
+            $piece = Piece::find($id);
+            
+            if (!$piece) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pieza no encontrada '
+                ], 400);
+            }
+        
             return response()->json([
-                'success' => false,
-                'message' => 'Pieza no encontrada '
-            ], 400);
+                'success' => true,
+                'data' => $piece->toArray()
+            ], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
         }
- 
-        return response()->json([
-            'success' => true,
-            'data' => $piece->toArray()
-        ], 200);
     }
 
     /**

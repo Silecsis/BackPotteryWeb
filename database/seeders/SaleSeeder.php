@@ -22,5 +22,13 @@ class SaleSeeder extends Seeder
         'price'=>200,
         'created_at' =>  Carbon::now()->format('Y-m-d H:i:s'),
         'updated_at' =>  Carbon::now()->format('Y-m-d H:i:s')]);
+
+        //Venta 2
+        DB::table('sales')->insert(['name'=>'Afu',
+        'user_id'=>'1',
+        'piece_id'=>'1',
+        'price'=>500,
+        'created_at' =>  Carbon::now()->format('Y-m-d H:i:s'),
+        'updated_at' =>  Carbon::now()->format('Y-m-d H:i:s')]);
     }
 }

@@ -23,7 +23,7 @@ class PieceSeeder extends Seeder
         'user_id'=>'1',
         'description'=>'Una pieza realizada como contenedor de cristales',
         'img'=>'carrusel1.jpg',
-        'sold'=>false,
+        'sold'=>true,
         'created_at' =>  Carbon::now()->format('Y-m-d H:i:s'),
         'updated_at' =>  Carbon::now()->format('Y-m-d H:i:s')]);
 

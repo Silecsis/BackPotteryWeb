@@ -19,8 +19,12 @@ class SaleController extends Controller
 {
     public function all(Request $request)
     {
-        $users=User::all();
-        $pieces=Piece::all();
+        //Recogemos solo los usuarios que tienen al menos 1 venta
+        //con el whereHas llamando a la relacion de ventas.
+        $users=User::whereHas('sales')->get();
+
+        //Solo seleccionamos las piezas que estén vendidas
+        $pieces=Piece::vendido("si")->get();
 
         //Tipos de filtrado:
         $nombre= $request->get('buscaNombre');
@@ -47,9 +51,15 @@ class SaleController extends Controller
                 };
             }
         }
+        
+        $response=[
+            "users"=>$users,
+            "pieces"=>$pieces,
+            "sales"=>$sales,
+        ];
 
 
-        return response()->json($sales);
+        return response()->json($response);
     }
 
     
