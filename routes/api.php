@@ -55,9 +55,19 @@ Route::post('/materials', [MaterialController::class,'create'])->middleware('aut
 
 //-------------------MODELO PIEZAS------------------------
 Route::get('pieces', [PieceController::class,'all']);
-Route::get('pieces/{id}', [PieceController::class,'show']);
+Route::get('pieces/detail/{id}', [PieceController::class,'detail']);//Para ver en detalle
+Route::get('pieces/{id}', [PieceController::class,'show'])->middleware('auth:api');
 Route::delete('/pieces/{id}', [PieceController::class,'destroy'])->middleware('auth:api');
-Route::put('/pieces/{id}', [PieceController::class,'update'])->middleware('auth:api');
+Route::get('img/{id}', [PieceController::class,'getImage']);
+
+//Por el tema de la img, aqui se pone mediante post para que reciba el form con el header.
+//Para que funcione con put habría que instalar otra libreria de la que no tengo conocimiento.
+Route::post('/pieces/{id}', [PieceController::class,'update'])->middleware('auth:api');
+
+
+
+Route::get('mypieces/{idUser}', [PieceController::class,'allMyPieces'])->middleware('auth:api');
+
 
 //-------------------MODELO VENTAS------------------------
 Route::get('sales', [SaleController::class,'all']);

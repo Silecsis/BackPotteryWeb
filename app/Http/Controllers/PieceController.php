@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Carbon;
 
 /**
  * CRUD del modelo piezas.
@@ -84,26 +85,62 @@ class PieceController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $piece = Piece::find($id);
- 
-        if (!$piece) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Pieza no encontrada'
-            ], 400);
+        if(Auth::user()->type=='admin'){
+            $piece = Piece::find($id);
+            
+            if (!$piece) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pieza no encontrada'
+                ], 400);
+            }
+
+            //Si existe la pieza, primero validamos.   
+            $request->validate([
+                'name' => 'required|string|max:255|min:6|unique:users,email,' . $piece->id,
+                'description' => 'required|string|',
+                'sold' => 'required|boolean|max:10|in:0,1',
+             ]); 
+
+
+            $piece->fill($request->all());
+            $piece->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+             //Subir la imagen
+            $image= $request->file('image'); 
+            // Si recibimos un objeto imagen tendremos que utilizar el disco para almacenarla
+            // Para ello utilizaremos un objeto storage de Laravel
+            if($image){
+                // Generamos un nombre único para la imagen basado en time() y el nombre original de la imagen
+                $image_name =  time() . $image->getClientOriginalName();
+                $image_delete= $piece->img;//Será para borrar la imagen y no saturar la carpeta
+                
+                // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                // donde se almacenó y guardamos la imagen recibida con el nombre generado
+                Storage::disk('pieces')->put($image_name, File::get($image));
+
+                //Si no es la imagen por defecto, eliminamos la que tenia antes
+                if($image_delete != 'default-img.png'){
+                    Storage::disk('pieces')->delete($image_delete);
+                }
+                $piece->img = $image_name; 
+            }
+        
+            $updated= $piece->save();
+
+        
+            if ($updated)
+                return response()->json([
+                    'success' => true
+                ]);
+            else
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La pieza no puede ser actualizada'
+                ], 500);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
         }
- 
-        $updated = $piece->fill($request->all())->save();
- 
-        if ($updated)
-            return response()->json([
-                'success' => true
-            ]);
-        else
-            return response()->json([
-                'success' => false,
-                'message' => 'La pieza no puede ser actualizada'
-            ], 500);
     }
 
     /**
@@ -111,37 +148,108 @@ class PieceController extends Controller
      */
     public function destroy($id)
     {
-        $piece = Piece::find($id);
+        if(Auth::user()->type=='admin'){
+            $piece = Piece::find($id);
  
+            if (!$piece) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pieza no encontrada'
+                ], 400);
+            }
+        
+            if ($piece->delete()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'La pieza '.$piece->name.' ha sido eliminada correctamente',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La pieza no puede ser eliminada'
+                ], 500);
+            }
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    }
+
+    public function detail($id)
+    {
+        $piece = Piece::find($id);
+
         if (!$piece) {
             return response()->json([
                 'success' => false,
                 'message' => 'Pieza no encontrada'
             ], 400);
         }
- 
-        if ($piece->delete()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'La pieza '.$piece->name.' ha sido eliminada correctamente',
-            ]);
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'La pieza no puede ser eliminada'
-            ], 500);
+
+        $user=User::find($piece->user_id);
+
+        $response=[
+            "piece"=> $piece,
+            "user"=>$user,
+            "materials"=>$piece->materials,
+        ];
+        
+        return response()->json($response);
+
+    }
+
+
+    /*-------------------------------MYPIECES--------------------------*/
+    
+    public function allMyPieces($id,Request $request)
+    {
+        //Recogemos el user pasado por id.
+        $user=User::find($id);
+
+        if(Auth::user()->id==$user->id){
+
+            //Tipos de filtrado:
+            $nombre= $request->get('buscaNombre');
+            $vendido= $request->get('buscaVendido');
+            $fecha= $request->get('buscaFechaLogin');
+
+             //La pieza con los filtros:
+             $pieces = Piece::userId($id)->nombre($nombre)->vendido($vendido)->fecha($fecha)->get();
+
+            $response=[
+                "pieces"=> $pieces,
+            ];
+
+
+            return response()->json($response);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
         }
     }
 
-    //----------------------------PARA IAMGENES-------------------
+
+
+
+
+    //----------------------------PARA IMAGENES-------------------
      /**
-    * Devuelve la imagen avatar del usuario
+    * Devuelve la imagen de la pieza
     *
     * @param [type] $filename
     * @return void
     */
-    public function getImage($filename){     
-        $file = Storage::disk('pieces')->get($filename);
-        return new Response($file, 200);
-     }
+
+     public function getImage($id){  
+        $piece=Piece::find($id);
+        
+        if($piece){
+
+            if($piece->img != null && Storage::disk('pieces')->exists($piece->img)){
+                $filename=$piece->img;  
+                $file = Storage::disk('pieces')->get($filename);
+                return new Response($file, 200);
+            }             
+        }
+
+        return new Response(null,404);
+    }
 }

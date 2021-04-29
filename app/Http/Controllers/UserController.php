@@ -125,7 +125,6 @@ class UserController extends Controller
                 'email' => 'required|string|email|max:255|min:6|unique:users,email,' . $user->id,
                 'type' => 'required|string|max:10|in:admin,user',
                 'nick' => 'required|string|max:255|min:4'
-                //'img' => 'required|min:4',
              ]); 
         
             $updated = $user->fill($request->all())->save();

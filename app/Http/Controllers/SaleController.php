@@ -60,9 +60,7 @@ class SaleController extends Controller
 
 
         return response()->json($response);
-    }
-
-    
+    } 
     
     /**
      * Devuelve un usuario localizado por el id.
@@ -87,9 +85,7 @@ class SaleController extends Controller
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
         }
-    }
-
-    
+    } 
 
     /**
      * Edita el usuario
@@ -128,8 +124,6 @@ class SaleController extends Controller
             return response()->json(['error' => 'Unauthorised'], 401);
         }
     }
-
-
 
     /*-------------------------------MYSALES--------------------------*/
     
