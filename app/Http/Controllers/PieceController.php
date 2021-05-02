@@ -346,6 +346,105 @@ class PieceController extends Controller
         }
     }
 
+    /**
+     * Manda a la vista.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function newMyPiece($idUser)
+    {
+        if(Auth::user()->id==$idUser){
+            $materials=Material::all();
+
+            if (!$materials) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No existen materiales'
+                ], 400);
+            }
+        
+            return response()->json([
+                'success' => true,
+                'data' => $materials->toArray()
+            ], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+      
+    }
+
+    /**
+     * Crea una nueva pieza.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function createMyPiece($idUser,Request $request)
+    {   
+        if(Auth::user()->id==$idUser){
+            $piece = new Piece;
+            
+             //Primero validamos.   
+             $request->validate([
+               'name' => 'required|string|max:255|min:6|unique:users,email,',
+               'description' => 'required|string|',
+               'image'=>'required',
+               'materialsArr'=>'required|array|min:1',
+            ]); 
+
+              //Subir la imagen
+              $image= $request->file('image'); 
+              // Si recibimos un objeto imagen tendremos que utilizar el disco para almacenarla
+              // Para ello utilizaremos un objeto storage de Laravel
+              if($image){
+                  // Generamos un nombre único para la imagen basado en time() y el nombre original de la imagen
+                  $image_name =  time() . $image->getClientOriginalName();
+
+                  // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                  // donde se almacenó y guardamos la imagen recibida con el nombre generado
+                  Storage::disk('pieces')->put($image_name, File::get($image));
+
+                  $piece->img = $image_name;   
+              } 
+
+              $piece->name = $request->name;
+              $piece->description = $request->description;
+              $piece->created_at = Carbon::now()->format('Y-m-d H:i:s');
+              $piece->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+              //Por defecto, la pieza no estará vendida y tendrá el id del usuario logueado.
+              $piece->user_id = Auth::user()->id;
+              $piece->sold = 0;
+
+
+              $materials=$request->materialsArr;
+
+              //Si materiales no está vacio.
+              if ($materials!=null && $piece->save()) { 
+
+                     //Le asignamos los materiales a la pieza.
+                     foreach($materials as $idMaterial){
+                        $piece->materials()->attach($idMaterial);
+                    }
+                    
+                    return response()->json([
+                        'success' => true,
+                        'data' => $piece->toArray()
+                    ]);
+
+              } else {
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Se ha producido un error a la hora de crear el material'
+                ], 500);
+              }
+            
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+      
+    }
+
 
 
 

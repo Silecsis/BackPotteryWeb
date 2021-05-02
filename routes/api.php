@@ -68,6 +68,8 @@ Route::post('/mypieces/{idUser}/{id}', [PieceController::class,'updateMyPieces']
 Route::get('mypieces/{idUser}', [PieceController::class,'allMyPieces'])->middleware('auth:api');
 Route::delete('/mypieces/{idUser}/{id}', [PieceController::class,'destroyMyPieces'])->middleware('auth:api');
 Route::get('mypieces/{idUser}/{id}', [PieceController::class,'showMyPieces'])->middleware('auth:api');
+Route::get('newmypiece/{idUser}', [PieceController::class,'newMyPiece'])->middleware('auth:api');
+Route::post('/newmypiece/{idUser}', [PieceController::class,'createMyPiece'])->middleware('auth:api');
 
 
 //-------------------MODELO VENTAS------------------------

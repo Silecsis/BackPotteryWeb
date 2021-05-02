@@ -135,7 +135,7 @@ class MaterialController extends Controller
             if ($material->save())
                 return response()->json([
                     'success' => true,
-                    'data' => $material->toArray()
+                    'data' => $material->toArray(),
                 ]);
             else
                 return response()->json([
