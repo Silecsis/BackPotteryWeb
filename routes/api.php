@@ -59,6 +59,8 @@ Route::get('pieces/detail/{id}', [PieceController::class,'detail']);//Para ver e
 Route::get('pieces/{id}', [PieceController::class,'show'])->middleware('auth:api');
 Route::delete('/pieces/{id}', [PieceController::class,'destroy'])->middleware('auth:api');
 Route::get('img/{id}', [PieceController::class,'getImage']);
+Route::get('addSale/{id}', [PieceController::class,'addSale'])->middleware('auth:api');
+Route::put('/changeSold/{id}', [PieceController::class,'changeSold'])->middleware('auth:api');
 
 //Por el tema de la img, aqui se pone mediante post para que reciba el form con el header.
 //Para que funcione con put habría que instalar otra libreria de la que no tengo conocimiento.
@@ -76,6 +78,8 @@ Route::post('/newmypiece/{idUser}', [PieceController::class,'createMyPiece'])->m
 Route::get('sales', [SaleController::class,'all']);
 Route::get('sales/{id}', [SaleController::class,'show'])->middleware('auth:api');
 Route::put('/sales/{id}', [SaleController::class,'update'])->middleware('auth:api');
+Route::delete('/sales/{id}', [SaleController::class,'destroy'])->middleware('auth:api');
+Route::post('/addsale/{id}', [SaleController::class,'create'])->middleware('auth:api');
 Route::get('mysales/{idUser}', [SaleController::class,'allMySales'])->middleware('auth:api');
 Route::get('mysales/{idUser}/{id}', [SaleController::class,'showMySale'])->middleware('auth:api');
 Route::put('/mysales/{idUser}/{id}', [SaleController::class,'updateMySale'])->middleware('auth:api');
