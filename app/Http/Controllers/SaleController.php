@@ -150,8 +150,13 @@ class SaleController extends Controller
                 if($piece->save()){
                     return response()->json([
                         'success' => true,
-                        'message' => 'La pieza se ha actualizado correctamente a no vendida',
+                        'message' => 'La pieza '.$piece->name.' se ha actualizado correctamente a no vendida',
                     ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Se ha creado la venta pero ha habido un error con la actualización del estado de venta de la pieza '.$piece->name.".",
+                    ], 400);
                 }
                 
                 return response()->json([
@@ -197,7 +202,21 @@ class SaleController extends Controller
             $sale->created_at = Carbon::now()->format('Y-m-d H:i:s');
             $sale->updated_at = Carbon::now()->format('Y-m-d H:i:s');
 
+            
+            $piece->sold=true;
+
             if ($sale->save()) { 
+                 if($piece->save()){
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'La pieza '.$piece->name.' se ha actualizado correctamente a no vendida',
+                    ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Se ha creado la venta pero ha habido un error con la actualización del estado de venta de la pieza '.$piece->name.".",
+                    ], 400);
+                }
                
                 return response()->json([
                     'success' => true,
