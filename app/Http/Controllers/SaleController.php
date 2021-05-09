@@ -284,9 +284,11 @@ class SaleController extends Controller
 
         if(Auth::user()->id==$idUser){
             
+            $piece = Piece::find($sale->piece_id);
             return response()->json([
                 'success' => true,
-                'data' => $sale->toArray()
+                'data' => $sale->toArray(),
+                'piece' => $piece->toArray(),
             ], 200);
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);

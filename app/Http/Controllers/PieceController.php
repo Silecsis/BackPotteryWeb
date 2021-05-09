@@ -274,11 +274,11 @@ class PieceController extends Controller
              $pieces = Piece::userId($id)->nombre($nombre)->vendido($vendido)->fecha($fecha)->get();
 
             $response=[
-                "pieces"=> $pieces,
+                "data"=> $pieces,
             ];
 
 
-            return response()->json($response);
+            return response()->json($pieces);
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
         }
