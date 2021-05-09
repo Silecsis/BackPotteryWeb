@@ -329,4 +329,115 @@ class SaleController extends Controller
         }
     }
 
+    /**
+     * Elimina a un usuario de la bbdd.
+     */
+    public function destroyMySale($idUser,$id)
+    {
+        if(Auth::user()->id==$idUser){
+            $piece = Piece::find($id);
+ 
+            //Sino existe la pieza o existe pero no está vendida
+            if (!$piece || !$piece->sold) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Venta no encontrada'
+                ], 400);
+            }
+
+            $sale = Sale::pieceId($id);
+            $piece->sold=false;
+                
+            if ($sale->delete()) {  
+
+                if($piece->save()){
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'La pieza '.$piece->name.' se ha actualizado correctamente a no vendida',
+                    ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Se ha creado la venta pero ha habido un error con la actualización del estado de venta de la pieza '.$piece->name.".",
+                    ], 400);
+                }
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La pieza no ha podido ser actualizada'
+                ], 500);
+                
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'La venta no puede ser eliminada'
+                ], 500);
+            }
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    }
+
+
+
+    public function createMySale($idUser,$idPiece,Request $request)
+    {
+        if(Auth::user()->id==$idUser){
+            $piece = Piece::find($idPiece);
+            
+            if (!$piece) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pieza no encontrada'
+                ], 400);
+            }
+
+            $request->validate([
+                'price' => 'numeric|regex:/^[\d]{0,11}(\.[\d]{1,2})?$/',//Valida decimal
+                'name' => 'required|string'
+             ]); 
+            
+            $sale = new Sale(); 
+            $sale->name = $request->name;
+            $sale->price = $request->price;
+            $sale->user_id = $piece->user_id;
+            $sale->piece_id = $piece->id;
+            $sale->created_at = Carbon::now()->format('Y-m-d H:i:s');
+            $sale->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+            
+            $piece->sold=true;
+
+            if ($sale->save()) { 
+                 if($piece->save()){
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'La pieza '.$piece->name.' se ha actualizado correctamente a no vendida',
+                    ]);
+                }else{
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Se ha creado la venta pero ha habido un error con la actualización del estado de venta de la pieza '.$piece->name.".",
+                    ], 400);
+                }
+               
+                return response()->json([
+                    'success' => true,
+                    'message' => 'La venta '.$sale->name.' ha sido creada correctamente',
+                ]);
+
+            } else {
+            
+              return response()->json([
+                  'success' => false,
+                  'message' => 'Se ha producido un error a la hora de crear el material'
+              ], 500);
+            }
+
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }    
+      
+    }
+
 }

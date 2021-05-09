@@ -226,34 +226,34 @@ class PieceController extends Controller
      * Devuelve un usuario localizado por el id.
      *
      */
-    public function changeSold($id)
-    {
-        if(Auth::user()->type=='admin'){
-            $piece = Piece::find($id);
+    // public function changeSold($id)
+    // {
+    //     if(Auth::user()->type=='admin'){
+    //         $piece = Piece::find($id);
     
-            if (!$piece) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Pieza no encontrada '
-                ], 400);
-            }
+    //         if (!$piece) {
+    //             return response()->json([
+    //                 'success' => false,
+    //                 'message' => 'Pieza no encontrada '
+    //             ], 400);
+    //         }
 
-            if($piece->sold){
-                $piece->sold = false;
-                $piece->save();
-            }else{
-                $piece->sold = true;
-                $piece->save();
-            }
+    //         if($piece->sold){
+    //             $piece->sold = false;
+    //             $piece->save();
+    //         }else{
+    //             $piece->sold = true;
+    //             $piece->save();
+    //         }
     
-            return response()->json([
-                'success' => true,
-                'message' => 'Campo sold de pieza actualizado '
-            ], 200);
-        }else{
-            return response()->json(['error' => 'Unauthorised'], 401);
-        }
-    } 
+    //         return response()->json([
+    //             'success' => true,
+    //             'message' => 'Campo sold de pieza actualizado '
+    //         ], 200);
+    //     }else{
+    //         return response()->json(['error' => 'Unauthorised'], 401);
+    //     }
+    // } 
 
 
     /*-------------------------------MYPIECES--------------------------*/
@@ -502,6 +502,31 @@ class PieceController extends Controller
         }
       
     }
+
+    /**
+     * Devuelve un usuario localizado por el id.
+     *
+     */
+    public function addMySale($idUser,$id)
+    {
+        if(Auth::user()->id==$idUser){
+            $piece = Piece::find($id);
+    
+            if (!$piece) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Pieza no encontrada '
+                ], 400);
+            }
+    
+            return response()->json([
+                'success' => true,
+                'data' => $piece->toArray()
+            ], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    } 
 
 
 
