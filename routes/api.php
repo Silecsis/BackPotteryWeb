@@ -1,6 +1,8 @@
 <?php
+/*Fichero de rutas para crear la Api accediendo
+  a los diferentes métodos de los diferentes modelos*/
 
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MaterialController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\PassportAuthController;
 
 
 //---------------------AUTH PASSPORT------------------------
+//---------------Rutas de registro y login------------------
 
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
@@ -33,7 +36,7 @@ Route::post('login', [PassportAuthController::class, 'login']);
 //     Route::get('users', [UserController::class,'all']);
 // });
 
-// -------------------MODELO USUARIOS------------------------
+//-------------------MODELO USUARIOS------------------------
 Route::get('users', [UserController::class,'all'])->middleware('auth:api');
 Route::get('users/{id}', [UserController::class,'show'])->middleware('auth:api');
 Route::delete('/users/{id}', [UserController::class,'destroy'])->middleware('auth:api');

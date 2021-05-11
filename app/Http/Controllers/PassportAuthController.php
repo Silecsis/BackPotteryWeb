@@ -1,6 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
+/**
+ * Controlador de autorización.
+ * Controla los usuarios logados.
+ */
+
 use Illuminate\Http\Request;
 use App\Models\User;
 

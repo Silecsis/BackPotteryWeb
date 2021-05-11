@@ -6,18 +6,30 @@ use App\Models\Sale;
 use App\Models\User;
 use App\Models\Piece;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
 
 
 /**
- * Lectura, creación y modificación de venta. 
- * Las ventas se borran automáticamente cuando se borra la pieza.
- * Esto podrán hacerlo solo los usuarion que tengan dichas ventas registradas
+ * CRUD del modelo sale (venta). 
+ * 
+ * Las ventas se borran automáticamente cuando se borra la pieza o 
+ * cuando se cambie el estado de venta de la pieza.
+ * 
+ * La lectura de las ventas realizadas podrá hacerla cualquier usuario.
+ * 
+ * El CRUD absoluto de todas las ventas del sistema solo podrá realizarlo los 
+ * usuarios con rol administrador.
+ * 
+ * Los usuarios logados podrán hacer el CRUD completo sobre sus propias ventas.
  */
 class SaleController extends Controller
 {
+    /**
+     * Lista todas las ventas.
+     * Filtra las ventas.
+     * Puede acceder cualquier usuario.
+     */
     public function all(Request $request)
     {
         //Recogemos solo los usuarios que tienen al menos 1 venta
@@ -64,8 +76,9 @@ class SaleController extends Controller
     } 
     
     /**
-     * Devuelve un usuario localizado por el id.
-     *
+     * Devuelve una venta localizada por el id desde la lista de "Ventas Realizadas".
+     * Será devuelta en la vista de edición de venta.
+     * Solo puede acceder el tipo administrador.
      */
     public function show($id)
     {
@@ -88,9 +101,9 @@ class SaleController extends Controller
         }
     } 
 
-    /**
-     * Edita el usuario
-     *
+     /**
+     * Edita la venta desde la lista de "Ventas Realizadas".
+     * Solo puede acceder el tipo administrador.
      */
     public function update(Request $request, $id)
     {
@@ -127,7 +140,9 @@ class SaleController extends Controller
     }
 
     /**
-     * Elimina a un usuario de la bbdd.
+     * Elimina a una venta al modificar el estado de venta de una pieza o
+     * al eliminar dicha pieza.
+     * Solo puede acceder el tipo administrador.
      */
     public function destroy($id)
     {
@@ -176,7 +191,10 @@ class SaleController extends Controller
     }
 
 
-
+    /**
+     * Crea una nueva venta al modificar el estado de venta de una pieza. 
+     * Solo puede acceder el tipo administrador.
+     */
     public function create($idPiece,Request $request)
     {
         if(Auth::user()->type=='admin'){
@@ -238,8 +256,12 @@ class SaleController extends Controller
     }
 
     /*-------------------------------MYSALES--------------------------*/
-    
 
+    /**
+     * Lista todas las ventas del usuario logado.
+     * Filtra las ventas.
+     * Puede acceder cualquier usuario logado.
+     */
     public function allMySales($id,Request $request)
     {
         $pieces=Piece::all();
@@ -272,6 +294,11 @@ class SaleController extends Controller
         }
     }
 
+    /**
+     * Devuelve una venta localizada por el id desde la lista de "Mis ventas Realizadas".
+     * Será devuelta en la vista de edición de mi venta.
+     * Puede acceder cualquier usuario logado y solo tendrá acceso a sus ventas.
+     */
     public function showMySale($idUser,$id)
     {
         $sale = Sale::find($id);
@@ -295,6 +322,10 @@ class SaleController extends Controller
         }
     }
 
+     /**
+     * Edita la venta desde la lista de "Mis ventas Realizadas".
+     * Puede acceder cualquier usuario logado y solo tendrá acceso a sus ventas.
+     */
     public function updateMySale($idUser,$id,Request $request)
     {
         $sale = Sale::find($id);
@@ -332,7 +363,10 @@ class SaleController extends Controller
     }
 
     /**
-     * Elimina a un usuario de la bbdd.
+     * Elimina a una venta al modificar el estado de venta de una pieza o
+     * al eliminar dicha pieza.
+     * Puede acceder cualquier usuario logado y solo tendrá acceso a sus ventas.
+     * Además cambia el estado de venta de la pieza.
      */
     public function destroyMySale($idUser,$id)
     {
@@ -381,7 +415,11 @@ class SaleController extends Controller
     }
 
 
-
+    /**
+     * Crea una nueva venta al modificar el estado de venta de una pieza. 
+     * Puede acceder cualquier usuario logado y solo tendrá acceso a sus ventas.
+     * Además cambia el estado de venta de la pieza.
+     */
     public function createMySale($idUser,$idPiece,Request $request)
     {
         if(Auth::user()->id==$idUser){

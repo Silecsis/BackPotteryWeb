@@ -5,24 +5,31 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\Piece;
 use App\Models\User;
-use App\Models\material_piece;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Carbon;
 
 /**
- * CRUD del modelo piezas.
- * Los admin tendrán acceso al listado de todas las piezas del sistema.
- * Los usuarios solo verán una lista de las piezas que poseen.
- * Los usuarios podran editar, eliminar sus piezas y crear una nueva pieza.
+ * CRUD del modelo piece (pieza). 
+ *  
+ * La lectura de las piezas realizadas podrá hacerla cualquier usuario al
+ * igual que la vista en detalle de estas.
+ * 
+ * El CRUD absoluto de todas las piezas del sistema solo podrá realizarlo los 
+ * usuarios con rol administrador.
+ * 
+ * Los usuarios logados podrán hacer el CRUD completo sobre sus propias piezas.
  */
 class PieceController extends Controller
 {
-
+    /**
+     * Lista todas las piezas.
+     * Filtra las piezas.
+     * Puede acceder cualquier usuario.
+     */
     public function all(Request $request)
     {
         //Solo recoge los usuarios que tienen, al menos, una pieza
@@ -55,8 +62,9 @@ class PieceController extends Controller
     }
     
     /**
-     * Devuelve un usuario localizado por el id.
-     *
+     * Devuelve una pieza localizada por el id desde la lista de "Piezas Realizadas".
+     * Será devuelta en la vista de edición de pieza.
+     * Solo puede acceder el tipo administrador.
      */
     public function show($id)
     {
@@ -80,8 +88,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Edita el usuario
-     *
+     * Edita la pieza desde la lista de "Piezas Realizadas".
+     * Solo puede acceder el tipo administrador.
      */
     public function update(Request $request, $id)
     {
@@ -115,7 +123,7 @@ class PieceController extends Controller
                 $image_name =  time() . $image->getClientOriginalName();
                 $image_delete= $piece->img;//Será para borrar la imagen y no saturar la carpeta
                 
-                // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                // Seleccionamos el disco virtual pieces, extraemos el fichero de la carpeta temporal
                 // donde se almacenó y guardamos la imagen recibida con el nombre generado
                 Storage::disk('pieces')->put($image_name, File::get($image));
 
@@ -144,7 +152,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Elimina a un usuario de la bbdd.
+     * Elimina a una pieza desde la lista de "Piezas Realizadas".
+     * Solo puede acceder el tipo administrador.
      */
     public function destroy($id)
     {
@@ -174,6 +183,11 @@ class PieceController extends Controller
         }
     }
 
+    /**
+     * Devuelve una pieza localizada por el id desde la lista de "Piezas Realizadas".
+     * Será devuelta en la vista de detail.
+     * Puede acceder cualquier usuario.
+     */
     public function detail($id)
     {
         $piece = Piece::find($id);
@@ -198,8 +212,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Devuelve un usuario localizado por el id.
-     *
+     * Recoge la pieza mediante su id y lo devuelve a la vista de AddSale.
+     * Solo puede acceder el tipo administrador.
      */
     public function addSale($id)
     {
@@ -222,42 +236,13 @@ class PieceController extends Controller
         }
     } 
 
-    /**
-     * Devuelve un usuario localizado por el id.
-     *
-     */
-    // public function changeSold($id)
-    // {
-    //     if(Auth::user()->type=='admin'){
-    //         $piece = Piece::find($id);
-    
-    //         if (!$piece) {
-    //             return response()->json([
-    //                 'success' => false,
-    //                 'message' => 'Pieza no encontrada '
-    //             ], 400);
-    //         }
-
-    //         if($piece->sold){
-    //             $piece->sold = false;
-    //             $piece->save();
-    //         }else{
-    //             $piece->sold = true;
-    //             $piece->save();
-    //         }
-    
-    //         return response()->json([
-    //             'success' => true,
-    //             'message' => 'Campo sold de pieza actualizado '
-    //         ], 200);
-    //     }else{
-    //         return response()->json(['error' => 'Unauthorised'], 401);
-    //     }
-    // } 
-
-
     /*-------------------------------MYPIECES--------------------------*/
     
+    /**
+     * Lista todas las piezas que ha realizado el usuario.
+     * Filtra las piezas.
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
+     */
     public function allMyPieces($id,Request $request)
     {
         //Recogemos el user pasado por id.
@@ -285,7 +270,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Elimina a un usuario de la bbdd.
+     * Elimina a una pieza desde la lista de "Mis piezas Realizadas".
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
      */
     public function destroyMyPieces($idUser, $id)
     {
@@ -316,8 +302,9 @@ class PieceController extends Controller
     }
 
      /**
-     * Devuelve un usuario localizado por el id.
-     *
+     * Devuelve una pieza localizada por el id desde la lista de "Mis piezas Realizadas".
+     * Será devuelta en la vista de edición de pieza.
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
      */
     public function showMyPieces($idUser,$id)
     {
@@ -341,8 +328,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Edita el usuario
-     *
+     * Edita la pieza desde la lista de "Mis piezas Realizadas".
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
      */
     public function updateMyPieces($idUser,Request $request, $id)
     {
@@ -376,7 +363,7 @@ class PieceController extends Controller
                 $image_name =  time() . $image->getClientOriginalName();
                 $image_delete= $piece->img;//Será para borrar la imagen y no saturar la carpeta
                 
-                // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                // Seleccionamos el disco virtual pieces, extraemos el fichero de la carpeta temporal
                 // donde se almacenó y guardamos la imagen recibida con el nombre generado
                 Storage::disk('pieces')->put($image_name, File::get($image));
 
@@ -388,7 +375,6 @@ class PieceController extends Controller
             }
         
             $updated= $piece->save();
-
         
             if ($updated)
                 return response()->json([
@@ -405,9 +391,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Manda a la vista.
-     *
-     * @return \Illuminate\Http\Response
+     * Manda a la vista de "Nueva pieza" todos los materiales que contiene la app.
+     * Puede acceder cualquier usuario logado y creará sus piezas.
      */
     public function newMyPiece($idUser)
     {
@@ -433,8 +418,7 @@ class PieceController extends Controller
 
     /**
      * Crea una nueva pieza.
-     *
-     * @return \Illuminate\Http\Response
+     * Puede acceder cualquier usuario logado y creará sus piezas.
      */
     public function createMyPiece($idUser,Request $request)
     {   
@@ -457,7 +441,7 @@ class PieceController extends Controller
                   // Generamos un nombre único para la imagen basado en time() y el nombre original de la imagen
                   $image_name =  time() . $image->getClientOriginalName();
 
-                  // Seleccionamos el disco virtual users, extraemos el fichero de la carpeta temporal
+                  // Seleccionamos el disco virtual pieces, extraemos el fichero de la carpeta temporal
                   // donde se almacenó y guardamos la imagen recibida con el nombre generado
                   Storage::disk('pieces')->put($image_name, File::get($image));
 
@@ -504,8 +488,8 @@ class PieceController extends Controller
     }
 
     /**
-     * Devuelve un usuario localizado por el id.
-     *
+     * Recoge la pieza mediante su id y lo devuelve a la vista de AddSale.
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
      */
     public function addMySale($idUser,$id)
     {
@@ -528,17 +512,10 @@ class PieceController extends Controller
         }
     } 
 
-
-
-
     //----------------------------PARA IMAGENES-------------------
      /**
     * Devuelve la imagen de la pieza
-    *
-    * @param [type] $filename
-    * @return void
     */
-
      public function getImage($id){  
         $piece=Piece::find($id);
         

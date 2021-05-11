@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+/**
+ * Controlador para la tabla material_piece
+ */
+
 use App\Models\material_piece;
 use Illuminate\Http\Request;
 

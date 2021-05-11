@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
  * CRUD de materiales.
  * Los administradores pueden hacer el CRUD entero.
  * Los usuarios solo podrán listar los materiales.
- * Modificación de perfil de cada usuario.
  */
 class MaterialController extends Controller
 {
@@ -37,7 +36,6 @@ class MaterialController extends Controller
     /**
      * Devuelve un material localizado por el id desde la lista de materiales.
      * Solo puede acceder el tipo administrador.
-     *
      */
     public function show($id)
     {
@@ -66,7 +64,6 @@ class MaterialController extends Controller
     /**
      * Edita el material desde la lista de materiales.
      * Solo puede acceder el tipo administrador.
-     *
      */
     public function update(Request $request, $id)
     {
@@ -111,7 +108,6 @@ class MaterialController extends Controller
      * Crea un nuevo material. 
      * Opción desde la vista de listar materiales.
      * Solo puede acceder el tipo administrador.
-     *
      */
     public function create(Request $request)
     {
