@@ -22,6 +22,7 @@ Proyecto final del curso. Backend
     <li>php artisan migrate</li>
     <li>php artisan db:seed</li>
     <li>php artisan passport:install</li>
+    <li>php artisan passport:client --personal</li>
 </lu> 
 
 <b>Recuerda lanzar el proyecto con "php artisan serve"</b>
