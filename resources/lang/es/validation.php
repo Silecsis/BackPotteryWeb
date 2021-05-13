@@ -144,6 +144,24 @@ return [
 	|
 	*/
 
-	'attributes' => [],
+	'attributes' => [
+		//MODELO USUARIO
+		'name'=>'nombre',
+		'email'=>'correo',
+		'type'=>'tipo de usuario',
+		'password'=>'contraseña',
+		'password_confirmation'=>'confirmación de contraseña',
+		//MODELO VENTAS (SALES)
+		'price' => 'precio',
+		//MODELO PIECES (PIEZAS)
+		'description'=>'descripción',
+		'sold'=>'¿vendido?',
+		'image'=>'imagen',
+		'materialsArr'=>'materiales',
+		//MODELO MATERIALS
+		'type_material'=>'tipo de material',
+		'temperature'=>'temperatura',
+		'toxic'=>'¿tóxico?',
+	],
 	
 ];
