@@ -218,9 +218,6 @@ class UserController extends Controller
      * Crea un nuevo usuario. 
      * Opción desde la vista de listar usuarios.
      * Solo puede acceder el tipo administrador.
-     *
-     * @param Request $request
-     * @return void
      */
     public function create(Request $request)
     {
