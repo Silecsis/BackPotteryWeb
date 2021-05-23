@@ -31,7 +31,7 @@ use App\Http\Controllers\PassportAuthController;
 
 Route::post('register', [PassportAuthController::class, 'register']);
 Route::post('login', [PassportAuthController::class, 'login']);
-Route::post('password', [PassportAuthController::class, 'passwordRequest']);
+Route::post('password', [PassportAuthController::class, 'recuperate']);
 
 // Route::middleware('auth:api')->group(function () {
 //     Route::get('users', [UserController::class,'all']);

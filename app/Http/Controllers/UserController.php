@@ -308,4 +308,41 @@ class UserController extends Controller
 
         return new Response(null,404);
     }
+
+      /**
+     * Cambiará la contraseña parada por parámetro al del usuario de email 
+     * pasado por parámetro en la bd.
+     *
+     * @param string $email
+     * @param string $password
+     * @return array devuelve el resultado de la operación
+     */
+    public static function changePassword($emailUser,$password)
+    {
+         //Buscamos user:
+         $user = User::emailExacto($emailUser)->get();
+         $userEncontrado=$user[0];
+
+         if($userEncontrado)
+         {
+            $userEncontrado->password = Hash::make($password);
+
+            if($userEncontrado->save()){
+                return $response= [
+                    'success' => true,
+                    'message' => 'Se ha cambiado la contraseña',
+                ]; 
+            }else{
+                return $response= [
+                    'success' => false,
+                    'message' => 'No se ha podido cambiar la contraseña'
+                ]; 
+            }
+         }else{
+            return $response= [
+                'success' => false,
+                'message' => 'No se ha encontrado ningún usuario con dicho correo'
+            ];
+         }  
+    }
 }

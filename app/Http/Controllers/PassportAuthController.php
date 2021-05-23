@@ -7,10 +7,13 @@ namespace App\Http\Controllers;
  * Controla los usuarios logados.
  */
 
+
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\MessagePasswordRequest;
 
 class PassportAuthController extends Controller
 {
@@ -88,5 +91,43 @@ class PassportAuthController extends Controller
         return response()->json('Logged out', 200);
     }
 
-    
+    /**
+     * Recuperará la contraseña mediante el email.
+     * 
+     * Cambiará la contraseña del usuario por otra nueva y
+     * se le envia un correo al usuario con dicha contra.
+     * 
+     * NOTA: Para cambiar el gmail utilizado para enviar correos,
+     * cambiar las siguientes variables de .env :
+     *  MAIL_HOST=smtp.mailtrap.io
+     *  MAIL_PORT=2525
+     *  MAIL_USERNAME=8db0fe1f6ff471
+     *  MAIL_PASSWORD=d2ce956b9e3cb1
+     *
+     * @return void
+     */
+    public function recuperate(Request $request)
+    {
+        $emailUser = $request->email;
+
+        
+        //Si el user está en la bd, se genera una contraseña nueva aleatoria.
+        $passwordNew=uniqid("",true); 
+        //Luego se cambia esta contraseña en la bd.
+        $changePassword = UserController::changePassword($emailUser,$passwordNew);
+        
+        if($changePassword['success']){
+            Mail::to($emailUser)->send(new MessagePasswordRequest($passwordNew));
+            return response()->json([
+                'success' => true,
+                'message' => 'Correo enviado',
+            ]); 
+        }else{
+            
+            return response()->json([
+                'success' => false,
+                'message' => $changePassword['message'],
+            ], 500);
+        } 
+    }
 }
