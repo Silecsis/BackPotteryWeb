@@ -66,6 +66,25 @@ class User extends Authenticatable
         return $this->hasMany(Sale::class);
     }
 
+    /**
+     * Metodo que llama a los mensajes recividos del usuario.
+     *
+     * @return void
+     */
+    public function messagesReceived(){
+                            //Model, clave foranea, clave local en el model solicitado
+        return $this->hasMany(Message::class,'user_id_receiver','id');
+    }
+
+    /**
+     * Metodo que llama a los mensajes enviados del usuario.
+     *
+     * @return void
+     */
+    public function messagesSender(){
+        return $this->hasMany(Message::class,'user_id_sender','id');
+    }
+
     //Campos de búsqueda:
 
     /**
