@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration
             $table->id();
             $table->string("title");
             $table->string("msg");
+            $table->boolean("read");
             $table->foreignId('user_id_receiver')->constrained()->onDelete('cascade')->onUpdate('cascade');//Foreign
             $table->foreignId('user_id_sender')->constrained()->onDelete('cascade')->onUpdate('cascade');//Foreign
             $table->timestamps();

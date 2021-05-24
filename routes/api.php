@@ -6,6 +6,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\PieceController;
 use App\Http\Controllers\SaleController;
 use App\Http\Controllers\PassportAuthController;
@@ -90,3 +91,7 @@ Route::get('mysales/{idUser}/{id}', [SaleController::class,'showMySale'])->middl
 Route::put('/mysales/{idUser}/{id}', [SaleController::class,'updateMySale'])->middleware('auth:api');
 Route::delete('/mysales/{idUser}/{id}', [SaleController::class,'destroyMySale'])->middleware('auth:api');
 Route::post('/addmysale/{idUser}/{id}', [SaleController::class,'createMySale'])->middleware('auth:api');
+
+//-------------------MODELO MENSSAGE------------------------
+Route::get('messages/received/{idUser}', [MessageController::class,'allMsgReceived'])->middleware('auth:api');
+Route::get('messages/sended/{idUser}', [MessageController::class,'allMsgSended'])->middleware('auth:api');
