@@ -125,4 +125,30 @@ class MessageController extends Controller
             return response()->json(['error' => 'Unauthorised'], 401);
         }
     }
+
+    /**
+     * Devuelve una pieza localizada por el id desde la lista de "Mis piezas Realizadas".
+     * Será devuelta en la vista de edición de pieza.
+     * Puede acceder cualquier usuario logado y accederá a sus piezas.
+     */
+    public function show($idUser,$id)
+    {
+        if(Auth::user()->id==$idUser){
+            $msg = Message::find($id);
+            
+            if (!$msg) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Mensaje no encontrado'
+                ], 400);
+            }
+        
+            return response()->json([
+                'success' => true,
+                'data' => $msg->toArray()
+            ], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    }
 }

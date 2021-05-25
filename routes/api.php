@@ -95,3 +95,4 @@ Route::post('/addmysale/{idUser}/{id}', [SaleController::class,'createMySale'])-
 //-------------------MODELO MENSSAGE------------------------
 Route::get('messages/received/{idUser}', [MessageController::class,'allMsgReceived'])->middleware('auth:api');
 Route::get('messages/sended/{idUser}', [MessageController::class,'allMsgSended'])->middleware('auth:api');
+Route::get('messages/{idUser}/{id}', [MessageController::class,'show'])->middleware('auth:api');
