@@ -127,9 +127,8 @@ class MessageController extends Controller
     }
 
     /**
-     * Devuelve una pieza localizada por el id desde la lista de "Mis piezas Realizadas".
-     * Será devuelta en la vista de edición de pieza.
-     * Puede acceder cualquier usuario logado y accederá a sus piezas.
+     * Devuelve un mensaje localizado por el id desde la lista de "Mensajes".
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
      */
     public function show($idUser,$id)
     {
@@ -147,6 +146,60 @@ class MessageController extends Controller
                 'success' => true,
                 'data' => $msg->toArray()
             ], 200);
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    }
+
+    /**
+     * Elimina los mensajes seleccionados con el checkbox.
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     */
+    public function destroy($idUser, Request $request)
+    {
+        if(Auth::user()->id==$idUser){
+            $msgArr = $request -> msgArr;
+            $errorNotFound = 0;
+            $errorNotDelete = 0;
+            $successDelete=0;
+ 
+            if (!count($msgArr) < 0) {
+                return response()->json([
+                    'success' => false,
+                    'messageNotMsg' => 'No hay mensages seleccionados para borrar'
+                ], 400);
+            }
+
+            foreach ($msgArr as $m){
+                $mAct = Message::find($m);
+
+                if(!$mAct){
+                    $errorNotFound ++;
+                }else if ($mAct && $mAct->delete()){
+                    $successDelete ++;
+                }else{
+                    $errorNotDelete ++;
+                }
+
+            }
+            
+            if ($errorNotFound != 0 || $errorNotDelete != 0) {
+                $strErrorNF= (string)$errorNotFound;
+                $strErrorND= (string)$errorNotDelete;
+                return response()->json([
+                    'success' => false,
+                    'errorNotFound' =>'No se han encontrado un total de ' . $strErrorNF . ' mensajes en la BBDD',
+                    'errorNotDelete' =>'No se han podido eliminar un total de ' . $strErrorND . ' mensajes en la BBDD',
+                ], 500);
+            } else {
+                $strSuccessD= (string)$successDelete;
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Se han eliminado los '.$strSuccessD.' mensajes correctamente',
+                ]);
+            }
+        
+            
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
         }
