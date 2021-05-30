@@ -61,7 +61,8 @@ class MessageController extends Controller
 
             $data=[
                 'msgs'=>$msgs,
-                'users'=>$usersSender
+                'users'=>$usersSender,
+                'usersNewMsg' => $users,
             ];
 
             return response()->json($data);
@@ -117,7 +118,8 @@ class MessageController extends Controller
 
             $data=[
                 'msgs'=>$msgs,
-                'users'=>$usersReceiver
+                'users'=>$usersReceiver,
+                'usersNewMsg' => $users,
             ];
 
             return response()->json($data);
@@ -204,4 +206,95 @@ class MessageController extends Controller
             return response()->json(['error' => 'Unauthorised'], 401);
         }
     }
+
+    /**
+     * Crea un nuevo mensaje.
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     */
+    public function create($idUser,Request $request)
+    {   
+        if(Auth::user()->id==$idUser){
+            $msg = new Message;
+            
+             //Primero validamos.   
+             $request->validate([
+               'user_id_receiver' => 'required',
+               'title' => 'required|string|min:2|max:30',
+               'msg'=>'required|string|min:5|max:255',
+            ]); 
+
+            $userId= user::find($request->user_id_receiver);
+
+              if($userId){ 
+                $msg->title = $request->title;
+                $msg->msg = $request->msg;
+                $msg->user_id_receiver = $request->user_id_receiver;
+                $msg->user_id_sender = Auth::user()->id;
+                $msg->read = 0;
+                $msg->created_at = Carbon::now()->format('Y-m-d H:i:s');
+                $msg->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+  
+                if ($msg->save()) { 
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Mensaje enviado correctamente'
+                    ]);
+  
+                } else {
+                  
+                  return response()->json([
+                      'success' => false,
+                      'message' => 'Se ha producido un error a la hora de enviar el mensaje'
+                  ], 500);
+                } 
+              } else{
+                return response()->json([
+                    'success' => false,
+                    'message' => 'El usuario al que se desea enviar el mensaje no se encuentra en nuestra BBDD'
+                ], 500);  
+              }
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+      
+    }
+
+    /**
+     * Crea un nuevo mensaje.
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     */
+    public function editRead($idUser,$id)
+    {   
+        if(Auth::user()->id==$idUser){
+            $msg = Message::find($id); 
+
+            if(!$msg){ 
+              return response()->json([
+                  'success' => false,
+                  'message' => 'El usuario al que se desea enviar el mensaje no se encuentra en nuestra BBDD'
+              ], 500);
+            } 
+
+            $msg->read = 1;
+            $msg->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+            if ($msg->save()) { 
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Mensaje editado correctamente'
+                ]);
+
+            } else {
+              
+              return response()->json([
+                  'success' => false,
+                  'message' => 'Se ha producido un error a la hora de editar el mensaje'
+              ], 500);
+            } 
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+      
+    }
+
 }

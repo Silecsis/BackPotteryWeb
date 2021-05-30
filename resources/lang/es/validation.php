@@ -162,6 +162,10 @@ return [
 		'type_material'=>'tipo de material',
 		'temperature'=>'temperatura',
 		'toxic'=>'¿tóxico?',
+		//MODELO MESSAGES
+		'user_id_receiver'=>'Para',
+		'title'=>'asunto del mensaje',
+		'msg'=>'contenido del mensaje'
 	],
 	
 ];

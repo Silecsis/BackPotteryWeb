@@ -96,4 +96,7 @@ Route::post('/addmysale/{idUser}/{id}', [SaleController::class,'createMySale'])-
 Route::get('messages/received/{idUser}', [MessageController::class,'allMsgReceived'])->middleware('auth:api');
 Route::get('messages/sended/{idUser}', [MessageController::class,'allMsgSended'])->middleware('auth:api');
 Route::get('messages/{idUser}/{id}', [MessageController::class,'show'])->middleware('auth:api');
+Route::post('/messages/create/{idUser}', [MessageController::class,'create'])->middleware('auth:api');
+Route::post('/messages/edit-read/{idUser}/{idMsg}', [MessageController::class,'editRead'])->middleware('auth:api');
+//El destroy se tiene que hacer con un post o no recoge la lista de mensajes a eliminar
 Route::post('/messages/delete/{idUser}', [MessageController::class,'destroy'])->middleware('auth:api');
