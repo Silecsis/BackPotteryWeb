@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Material;
 use App\Models\Piece;
 use App\Models\User;
+use App\Models\Message;
 use Illuminate\Http\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -235,6 +236,64 @@ class PieceController extends Controller
             return response()->json(['error' => 'Unauthorised'], 401);
         }
     } 
+
+    /**
+     * Envia un mensaje de solicitud de compra de una pieza localizada 
+     * por el id desde la lista de "Piezas Realizadas".
+     * Puede acceder cualquier usuario.
+     */
+    public function buy($idUser,$id)
+    {
+        if($idUser == "-1"){
+            return response()->json([
+                'success' => false,
+                'message' => 'Debe estar logado para poder comprar una pieza'
+            ], 400);
+        }
+
+        $user = User::find($idUser);
+
+        if(!$user){
+            return response()->json([
+                'success' => false,
+                'message' => 'Usuario no encontrado'
+            ], 400);
+        }
+
+        $piece = Piece::find($id);
+
+        if (!$piece) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pieza no encontrada'
+            ], 400);
+        }
+
+        //Una vez comprobado todo, mandamos mensaje de que se desea comprar una pieza
+        $msg=new Message();
+
+        $msg->title = "Solicitud de compra";
+        $msg->msg = "Desearía ponerme en contacto con usted para negociar el precio de compra de su pieza nombrada '".$piece->name. "', con fecha de creación '".substr($piece->created_at,0,10)."'. Muchas gracias de antemano.";
+        $msg->user_id_receiver = $piece->user_id;
+        $msg->user_id_sender = $user->id;
+        $msg->read = 0;
+        $msg->created_at = Carbon::now()->format('Y-m-d H:i:s');
+        $msg->updated_at = Carbon::now()->format('Y-m-d H:i:s');
+
+        if ($msg->save()) { 
+            return response()->json([
+                'success' => true,
+                'message' => 'Se ha enviado un mensaje para la solicitud de compra.'
+            ]);
+
+        } else {
+          
+          return response()->json([
+              'success' => false,
+              'message' => 'Se ha producido un error a la hora de enviar el mensaje de solicitud'
+          ], 500);
+        } 
+    }
 
     /*-------------------------------MYPIECES--------------------------*/
     

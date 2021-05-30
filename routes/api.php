@@ -61,6 +61,8 @@ Route::post('/materials', [MaterialController::class,'create'])->middleware('aut
 //-------------------MODELO PIEZAS------------------------
 Route::get('pieces', [PieceController::class,'all']);
 Route::get('pieces/detail/{id}', [PieceController::class,'detail']);//Para ver en detalle
+Route::get('/buyPiece/{idUser}/{id}', [PieceController::class,'buy']);//Para comprar la pieza
+
 Route::get('pieces/{id}', [PieceController::class,'show'])->middleware('auth:api');
 Route::delete('/pieces/{id}', [PieceController::class,'destroy'])->middleware('auth:api');
 Route::get('img/{id}', [PieceController::class,'getImage']);

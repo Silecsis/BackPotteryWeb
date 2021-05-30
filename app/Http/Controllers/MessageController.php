@@ -32,8 +32,8 @@ class MessageController extends Controller
             $userSender= $request->get('buscaUser');
             $fecha= $request->get('buscaFechaLogin');
 
-             //Los mensajes con los filtros:
-            $msgs = Message::userIdReceived($id)->title($title)->read($read)->userIdSender($userSender)->fecha($fecha)->get();
+             //Los mensajes con los filtros y ordenados de forma descendiente de fecha:
+            $msgs = Message::userIdReceived($id)->title($title)->read($read)->userIdSender($userSender)->fecha($fecha)->orderBy('created_at','DESC')->get();
             $users=User::all();
 
             foreach($msgs as $m){
@@ -89,8 +89,8 @@ class MessageController extends Controller
             $userReceiver= $request->get('buscaUser');
             $fecha= $request->get('buscaFechaLogin');
 
-             //Los mensajes con los filtros:
-            $msgs = Message::userIdSender($id)->title($title)->read($read)->userIdReceived($userReceiver)->fecha($fecha)->get();
+             //Los mensajes con los filtros y ordenados de forma descendiente de fecha:
+            $msgs = Message::userIdSender($id)->title($title)->read($read)->userIdReceived($userReceiver)->fecha($fecha)->orderBy('created_at','DESC')->get();
             $users=User::all();
 
             foreach($msgs as $m){
