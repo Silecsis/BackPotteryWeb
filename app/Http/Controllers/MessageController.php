@@ -260,7 +260,7 @@ class MessageController extends Controller
     }
 
     /**
-     * Crea un nuevo mensaje.
+     * Edita el estado de leido a no leido de un  mensaje.
      * Solo podrá acceder cada usuario logado a sus propios mensajes.
      */
     public function editRead($idUser,$id)
@@ -290,6 +290,46 @@ class MessageController extends Controller
                   'success' => false,
                   'message' => 'Se ha producido un error a la hora de editar el mensaje'
               ], 500);
+            } 
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+      
+    }
+
+    /**
+     * Muestra el total de mensajes sin leer
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     */
+    public function msgWithoutRead($idUser)
+    {   
+        if(Auth::user()->id==$idUser){
+            $userAuth = User::find($idUser);
+            $msgs = $userAuth->messagesReceived;
+            $withoutRead=0;
+
+            if(!$msgs){ 
+              return response()->json([
+                  'message' => 'No tiene mensajes'
+              ]);
+            } 
+
+            foreach($msgs as $m){
+                if(!$m->read){
+                    $withoutRead++;
+                }
+            }
+
+            if ($withoutRead != 0) { 
+                return response()->json([
+                    'count' => $withoutRead,
+                ]);
+
+            } else {
+              
+                return response()->json([
+                    'count' => '0',
+                ]);
             } 
         }else{
             return response()->json(['error' => 'Unauthorised'], 401);
