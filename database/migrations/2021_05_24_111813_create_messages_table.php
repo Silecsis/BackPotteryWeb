@@ -20,6 +20,8 @@ class CreateMessagesTable extends Migration
             $table->boolean("read");
             $table->foreignId('user_id_receiver')->constrained()->onDelete('cascade')->onUpdate('cascade');//Foreign
             $table->foreignId('user_id_sender')->constrained()->onDelete('cascade')->onUpdate('cascade');//Foreign
+            $table->boolean("delete_receiver")->default(false);;
+            $table->boolean("delete_sender")->default(false);
             $table->timestamps();
         });
     }

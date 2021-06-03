@@ -33,7 +33,8 @@ class MessageController extends Controller
             $fecha= $request->get('buscaFechaLogin');
 
              //Los mensajes con los filtros y ordenados de forma descendiente de fecha:
-            $msgs = Message::userIdReceived($id)->title($title)->read($read)->userIdSender($userSender)->fecha($fecha)->orderBy('created_at','DESC')->get();
+            //Le pasamos los mensajes que no estén borrados de forma lógica
+            $msgs = Message::userIdReceived($id)->deleteReceiver('no')->title($title)->read($read)->userIdSender($userSender)->fecha($fecha)->orderBy('created_at','DESC')->get();
             $users=User::all();
 
             foreach($msgs as $m){
@@ -44,7 +45,7 @@ class MessageController extends Controller
                 }
             }
 
-            //Le pasamos todo slos mensajes que el usuario ha recibido.
+            //Le pasamos todo slos mensajes que el usuario ha recibido 
             $msgsAll=$user->messagesReceived;
             $usersSender=[];
 
@@ -90,7 +91,8 @@ class MessageController extends Controller
             $fecha= $request->get('buscaFechaLogin');
 
              //Los mensajes con los filtros y ordenados de forma descendiente de fecha:
-            $msgs = Message::userIdSender($id)->title($title)->read($read)->userIdReceived($userReceiver)->fecha($fecha)->orderBy('created_at','DESC')->get();
+            //Le pasamos los mensajes que no estén borrados de forma lógica
+            $msgs = Message::userIdSender($id)->deleteSender('no')->title($title)->read($read)->userIdReceived($userReceiver)->fecha($fecha)->orderBy('created_at','DESC')->get();
             $users=User::all();
 
             foreach($msgs as $m){
@@ -315,7 +317,8 @@ class MessageController extends Controller
             } 
 
             foreach($msgs as $m){
-                if(!$m->read){
+                //Que no estén leidos ni con el borrado lógico
+                if(!$m->read && !$m->delete_receiver){
                     $withoutRead++;
                 }
             }
@@ -335,6 +338,122 @@ class MessageController extends Controller
             return response()->json(['error' => 'Unauthorised'], 401);
         }
       
+    }
+
+    /**
+     * Realiza un borrado lógico de los mensajes seleccionados con el checkbox.
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     * Se realizará el borrado lógico en los mensajes recibidos
+     */
+    public function deleteLogicReceveided($idUserReceived, Request $request)
+    {
+        if(Auth::user()->id==$idUserReceived){
+            $msgArr = $request -> msgArr;
+            $errorNotFound = 0;
+            $errorNotDelete = 0;
+            $successDelete=0;
+ 
+            if (!count($msgArr) < 0) {
+                return response()->json([
+                    'success' => false,
+                    'messageNotMsg' => 'No hay mensages seleccionados para borrar'
+                ], 400);
+            }
+
+            foreach ($msgArr as $m){
+                $mAct = Message::find($m);
+
+                if(!$mAct){
+                    $errorNotFound ++;
+                }else if ($mAct){
+                    $mAct->delete_receiver = true;
+                    if($mAct->save()){
+                        $successDelete ++;
+                    }
+                }else{
+                    $errorNotDelete ++;
+                }
+
+            }
+            
+            if ($errorNotFound != 0 || $errorNotDelete != 0) {
+                $strErrorNF= (string)$errorNotFound;
+                $strErrorND= (string)$errorNotDelete;
+                return response()->json([
+                    'success' => false,
+                    'errorNotFound' =>'No se han encontrado un total de ' . $strErrorNF . ' mensajes en la BBDD',
+                    'errorNotDelete' =>'No se han podido eliminar un total de ' . $strErrorND . ' mensajes en la BBDD',
+                ], 500);
+            } else {
+                $strSuccessD= (string)$successDelete;
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Se han eliminado los '.$strSuccessD.' mensajes correctamente',
+                ]);
+            }
+        
+            
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
+    }
+
+    /**
+     * Realiza un borrado lógico de los mensajes seleccionados con el checkbox.
+     * Solo podrá acceder cada usuario logado a sus propios mensajes.
+     * Se realizará el borrado lógico en los mensajes enviados
+     */
+    public function deleteLogicSender($idUserSender, Request $request)
+    {
+        if(Auth::user()->id==$idUserSender){
+            $msgArr = $request -> msgArr;
+            $errorNotFound = 0;
+            $errorNotDelete = 0;
+            $successDelete=0;
+ 
+            if (!count($msgArr) < 0) {
+                return response()->json([
+                    'success' => false,
+                    'messageNotMsg' => 'No hay mensages seleccionados para borrar'
+                ], 400);
+            }
+
+            foreach ($msgArr as $m){
+                $mAct = Message::find($m);
+
+                if(!$mAct){
+                    $errorNotFound ++;
+                }else if ($mAct){
+                    $mAct->delete_sender = true;
+                    if($mAct->save()){
+                        $successDelete ++;
+                    }
+                }else{
+                    $errorNotDelete ++;
+                }
+
+            }
+            
+            if ($errorNotFound != 0 || $errorNotDelete != 0) {
+                $strErrorNF= (string)$errorNotFound;
+                $strErrorND= (string)$errorNotDelete;
+                return response()->json([
+                    'success' => false,
+                    'errorNotFound' =>'No se han encontrado un total de ' . $strErrorNF . ' mensajes en la BBDD',
+                    'errorNotDelete' =>'No se han podido eliminar un total de ' . $strErrorND . ' mensajes en la BBDD',
+                ], 500);
+            } else {
+                $strSuccessD= (string)$successDelete;
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Se han eliminado los '.$strSuccessD.' mensajes correctamente',
+                ]);
+            }
+        
+            
+        }else{
+            return response()->json(['error' => 'Unauthorised'], 401);
+        }
     }
 
 }

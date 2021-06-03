@@ -104,4 +104,34 @@ class Message extends Model
     		return $query->whereDate('created_at','=',"$fecha");
     	}
     }
+
+    /**
+     * Busca los mensajes por el campo delete_receiver exacto
+     *
+     * @param [type] $query
+     * @param [type] $toxico
+     * @return void
+     */
+    public function scopeDeleteReceiver($query, $delete) {
+    	if ($delete=='no') {
+    		return $query->where('delete_receiver','=',0);
+    	}else if($delete=='si'){
+            return $query->where('delete_receiver','=',1);
+        }
+    }
+
+    /**
+     * Busca los mensajes por el campo delete_sender exacto
+     *
+     * @param [type] $query
+     * @param [type] $toxico
+     * @return void
+     */
+    public function scopeDeleteSender($query, $delete) {
+    	if ($delete=='no') {
+    		return $query->where('delete_sender','=',0);
+    	}else if($delete=='si'){
+            return $query->where('delete_sender','=',1);
+        }
+    }
 }

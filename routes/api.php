@@ -103,3 +103,5 @@ Route::post('/messages/edit-read/{idUser}/{idMsg}', [MessageController::class,'e
 Route::post('/messages/count/{idUser}', [MessageController::class,'msgWithoutRead'])->middleware('auth:api');
 //El destroy se tiene que hacer con un post o no recoge la lista de mensajes a eliminar
 Route::post('/messages/delete/{idUser}', [MessageController::class,'destroy'])->middleware('auth:api');
+Route::post('/messages/delete/received/{idUser}', [MessageController::class,'deleteLogicReceveided'])->middleware('auth:api');
+Route::post('/messages/delete/sended/{idUser}', [MessageController::class,'deleteLogicSender'])->middleware('auth:api');
