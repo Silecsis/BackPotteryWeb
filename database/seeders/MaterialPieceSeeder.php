@@ -55,6 +55,16 @@ class MaterialPieceSeeder extends Seeder
             'material_id'=>'4'
         ]);
 
+        DB::table('material_piece')->insert([
+            'piece_id'=>'4',
+            'material_id'=>'4'
+        ]);
+
+        DB::table('material_piece')->insert([
+            'piece_id'=>'5',
+            'material_id'=>'4'
+        ]);
+
         for($i=6;$i<=8;$i++){
             DB::table('material_piece')->insert([
                 'piece_id'=>$i,
